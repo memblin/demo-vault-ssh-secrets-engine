@@ -1,0 +1,48 @@
+# systemd-almalinux
+#
+# Build the default image with:
+#   podman build -t systemd-almalinux:latest -t systemd-almalinux:10 -f Containerfile.almalinux .
+#
+# Build versioned image with:
+#   podman build -t systemd-almalinux:9 -f Containerfile.almalinux --build-arg VERSION=9 .
+#
+ARG VERSION=10
+
+FROM almalinux:${VERSION}
+
+ARG VERSION=10
+
+# Envirionment variable for the Vault CLI for the demo
+ENV VAULT_SKIP_VERIFY=1
+ENV VAULT_ADDR="http://vault.local:8200"
+ENV VAULT_TOKEN="RootToken"
+
+RUN dnf update -y \
+  && dnf install -y git \
+  iproute \
+  openssh-clients \
+  openssh-server \
+  procps-ng \
+  python3 \
+  sudo \
+  systemd \
+  unzip \
+  which \
+  # Cleanup the image
+  && dnf clean all \
+  && rm -rf /var/cache/dnf
+
+WORKDIR /tmp
+
+RUN curl -o /tmp/vault_1.21.4_linux_amd64.zip \
+  -L https://releases.hashicorp.com/vault/1.21.4/vault_1.21.4_linux_amd64.zip \
+  && unzip /tmp/vault_1.21.4_linux_amd64.zip \
+  && cp vault /usr/local/bin
+
+RUN useradd --comment 'TKC Admin' --create-home --shell /usr/bin/bash tkcadmin \
+  && echo 'tkcadmin ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/tkcadmin \
+  && chmod 0440 /etc/sudoers.d/tkcadmin \
+  && chown root:root /etc/sudoers.d/tkcadmin
+
+WORKDIR /root
+CMD [ "/sbin/init" ]
