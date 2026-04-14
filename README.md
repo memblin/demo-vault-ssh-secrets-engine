@@ -2,7 +2,7 @@
 
 The content in this repository pairs with a demo posted to my youtube channel.
 
-- [Lab: Vault SSH Secrets Engine - Signed SSH Certificates](TODO-POSTME) (Coming Soon)
+- [Lab: Vault SSH Secrets Engine - Signed SSH Certificates](https://youtu.be/3ewfuAokP3M)
 
 The demo covers OpenSSH authentication using SSH CA signed certificates as
 issued by Vault using the SSH secrets backend.
